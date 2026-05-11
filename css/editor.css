@@ -1,0 +1,151 @@
+/* Classic Editor - Additional Styles */
+
+/* Editor container improvements */
+#wpbody #post-body-content {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Post state indicators */
+.classic-editor-post-state {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+	margin-left: 8px;
+	vertical-align: middle;
+}
+
+.classic-editor-post-state--classic {
+	background: #d4e6f1;
+	color: #1d5a7a;
+}
+
+.classic-editor-post-state--block {
+	background: #e8d5d5;
+	color: #7a1d1d;
+}
+
+.classic-editor-post-state--forced {
+	background: #f0f0f1;
+	color: #505050;
+	font-style: italic;
+}
+
+/* Editor switch button in toolbar */
+.editor-post__switch-to-classic {
+	margin-left: 8px !important;
+}
+
+.components-button.editor-post__switch-to-classic:focus {
+	box-shadow: 0 0 0 2px #2271b1, 0 0 0 4px #fff;
+}
+
+/* Switcher link in classic editor */
+#poststuff #side-sortable .switch-editor-link {
+	margin: 10px 0;
+	padding: 0;
+}
+
+#poststuff #side-sortable .switch-editor-link a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	color: #1d2323;
+	font-size: 13px;
+	text-decoration: none;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#poststuff #side-sortable .switch-editor-link a:hover {
+	background: #f0f0f1;
+	border-color: #8c8f94;
+}
+
+/* Keyboard shortcut hint */
+.classic-editor-hint {
+	color: #646970;
+	font-size: 13px;
+	font-style: italic;
+	animation: classic-editor-fade-in 0.3s ease;
+}
+
+@keyframes classic-editor-fade-in {
+	from { opacity: 0; transform: translateY(-5px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast notification */
+#classic-editor-toast {
+	position: fixed;
+	top: 40px;
+	right: 20px;
+	z-index: 100001;
+	max-width: 350px;
+	animation: classic-editor-slide-in 0.3s ease;
+}
+
+@keyframes classic-editor-slide-in {
+	from { opacity: 0; transform: translateX(20px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+/* Settings page improvements */
+.classic-editor-options {
+	padding: 15px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.classic-editor-options p {
+	margin: 8px 0;
+}
+
+.classic-editor-options label {
+	cursor: pointer;
+}
+
+.classic-editor-options input[type="radio"] {
+	margin-right: 8px;
+}
+
+/* Network settings */
+.table-shadow .classic-editor-network-settings {
+	max-width: 600px;
+}
+
+/* Responsive improvements */
+@media screen and (max-width: 782px) {
+	.classic-editor-post-state {
+		display: block;
+		margin: 4px 0 0;
+	}
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+	.classic-editor-post-state {
+		border: 2px solid currentColor;
+	}
+
+	#poststuff #side-sortable .switch-editor-link a {
+		border-width: 2px;
+	}
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	#poststuff #side-sortable .switch-editor-link a,
+	.classic-editor-hint,
+	#classic-editor-toast {
+		transition: none;
+		animation: none;
+	}
+}
