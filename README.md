@@ -1,10 +1,10 @@
 # Classic Editor
 
-![Plugin Version](https://img.shields.io/wordpress/plugin/v/classic-editor?style=flat)
-![WordPress Version](https://img.shields.io/wordpress/wp-version-v/classic-editor/6.4?style=flat)
+![Plugin Version](https://img.shields.io/badge/Version-1.6.7-blue)
+![WordPress Version](https://img.shields.io/badge/WordPress-6.4-blue)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)
-![License](https://img.shields.io/license/gpl-2.0)
-[![Code Quality](https://img.shields.io/codequality/grade)](https://codequality.com)
+![License](https://img.shields.io/badge/License-GPL--2.0-green)
+![PHPStan Level](https://img.shields.io/badge/PHPStan-Level%208-brightgreen)
 
 > **Personal Fork / Independent Project** — This is not an official WordPress release. It is a clean-room fork maintained for core modernization, plugin development, or theme authorship under personal standards that exceed the WordPress project's own requirements. No upstream compatibility is guaranteed or intended.
 
