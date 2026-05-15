@@ -271,6 +271,10 @@ final class Classic_Editor {
 				'labels'           => array(
 					'classic'  => __( 'Classic Editor', 'classic-editor' ),
 					'block'   => __( 'Block Editor', 'classic-editor' ),
+					'switchToBlock' => __( 'Switch to block editor', 'classic-editor' ),
+					'switchToClassic' => __( 'Switch to classic editor', 'classic-editor' ),
+					'switchToBlockAria' => __( 'Switch to the block editor', 'classic-editor' ),
+					'switchToClassicAria' => __( 'Switch to the classic editor', 'classic-editor' ),
 				),
 			)
 		);

@@ -57,9 +57,20 @@
 
 			if ( $title.length && classicEditorData.allowUsers ) {
 				const hint = classicEditorData.shortcutHint;
-				if ( ! window.localStorage.getItem( 'classic-editor-hint-shown' ) ) {
+				let hintShown = false;
+				try {
+					hintShown = window.localStorage.getItem( 'classic-editor-hint-shown' ) === 'true';
+				} catch ( e ) {
+					// localStorage unavailable (e.g., private browsing)
+				}
+				if ( ! hintShown ) {
 					setTimeout( function() {
 						$( '#title' ).after( '<p class="classic-editor-hint" style="color: #646970; font-size: 13px; margin-top: -10px; margin-bottom: 20px;">' + hint + '</p>' );
+						try {
+							window.localStorage.setItem( 'classic-editor-hint-shown', 'true' );
+						} catch ( e ) {
+							// localStorage unavailable
+						}
 					}, 1000 );
 				}
 			}

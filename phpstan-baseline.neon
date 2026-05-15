@@ -1,0 +1,439 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function _draft_or_post_title not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function absint not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_action not found\.$#'
+			identifier: function.notFound
+			count: 21
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_filter not found\.$#'
+			identifier: function.notFound
+			count: 14
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_meta_box not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_network_option not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_option not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_query_arg not found\.$#'
+			identifier: function.notFound
+			count: 8
+			path: classic-editor.php
+
+		-
+			message: '#^Function add_settings_field not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function admin_url not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function apply_filters not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: classic-editor.php
+
+		-
+			message: '#^Function check_ajax_referer not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function checked not found\.$#'
+			identifier: function.notFound
+			count: 7
+			path: classic-editor.php
+
+		-
+			message: '#^Function current_user_can not found\.$#'
+			identifier: function.notFound
+			count: 7
+			path: classic-editor.php
+
+		-
+			message: '#^Function delete_metadata not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function delete_network_option not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function delete_option not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function esc_html_e not found\.$#'
+			identifier: function.notFound
+			count: 11
+			path: classic-editor.php
+
+		-
+			message: '#^Function esc_url not found\.$#'
+			identifier: function.notFound
+			count: 6
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_current_user_id not found\.$#'
+			identifier: function.notFound
+			count: 5
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_edit_post_link not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_network_option not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_option not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_post not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_post_meta not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_post_status not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_post_type not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_queried_object_id not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_rest_url not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_user_meta not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function get_user_option not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function has_action not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function is_admin not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function is_multisite not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: classic-editor.php
+
+		-
+			message: '#^Function is_rtl not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function is_singular not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function plugins_url not found\.$#'
+			identifier: function.notFound
+			count: 5
+			path: classic-editor.php
+
+		-
+			message: '#^Function post_type_supports not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function register_activation_hook not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function register_rest_route not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function register_setting not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function register_uninstall_hook not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function remove_action not found\.$#'
+			identifier: function.notFound
+			count: 19
+			path: classic-editor.php
+
+		-
+			message: '#^Function remove_query_arg not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function sanitize_text_field not found\.$#'
+			identifier: function.notFound
+			count: 5
+			path: classic-editor.php
+
+		-
+			message: '#^Function update_network_option not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: classic-editor.php
+
+		-
+			message: '#^Function update_post_meta not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function update_user_meta not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function update_user_option not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_create_nonce not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_enqueue_script not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_enqueue_style not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_localize_script not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_nonce_field not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_register_script not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_register_style not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_scripts_get_suffix not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_send_json_error not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_send_json_success not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_unslash not found\.$#'
+			identifier: function.notFound
+			count: 5
+			path: classic-editor.php
+
+		-
+			message: '#^Function wp_verify_nonce not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_edit_links\(\) has parameter \$actions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_edit_links\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_post_state\(\) has parameter \$post_states with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_post_state\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_settings_link\(\) has parameter \$links with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:add_settings_link\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:remember_block_editor\(\) has parameter \$editor_settings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:remember_block_editor\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Method Classic_Editor\:\:rest_update_preferences\(\) never returns WP_Error so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function array_splice expects int, int\<0, max\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: classic-editor.php
+
+		-
+			message: '#^Static property Classic_Editor\:\:\$user_last_editor is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: classic-editor.php

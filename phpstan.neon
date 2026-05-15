@@ -1,0 +1,10 @@
+includes:
+	- phpstan-baseline.neon
+
+parameters:
+	level: 8
+	paths:
+		- classic-editor.php
+
+	bootstrapFiles:
+		- phpstan-bootstrap.php
