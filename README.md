@@ -1,6 +1,6 @@
 # Classic Editor
 
-![Plugin Version](https://img.shields.io/badge/Version-1.6.7-blue)
+![Plugin Version](https://img.shields.io/badge/Version-1.7.0-blue)
 ![WordPress Version](https://img.shields.io/badge/WordPress-6.4-blue)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)
 ![License](https://img.shields.io/badge/License-GPL--2.0-green)
@@ -55,9 +55,9 @@ wp plugin activate classic-editor
 ### Code Quality
 
 - PHP 8.2 strict types throughout — no exceptions.
-- PSR-12 / PER coding style enforced.
+- WordPress Coding Standards / PSR-12 / PER coding style enforced.
 - PHPStan level 8+ static analysis applied to the entire codebase.
-- Zero deprecated functions, zero legacy patterns.
+- composer.lock committed for reproducible builds.
 
 ---
 
@@ -152,13 +152,13 @@ git clone https://github.com/cbuntingde/classic-editor.git
 cd classic-editor
 
 # Install PHP dependencies
-composer require --dev phpstan/phpstan squizlabs/php_codesniffer
+composer install
 
 # Run static analysis
-vendor/bin/phpstan analyse --level=8
+vendor/bin/phpstan analyse
 
 # Run code style check
-vendor/bin/phpcs --standard=PSR12
+vendor/bin/phpcs --standard=WordPress
 ```
 
 ### Commit Standards
