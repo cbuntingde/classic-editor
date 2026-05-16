@@ -178,7 +178,7 @@ Commits describe completed work, not process or sequence:
 This project follows OWASP 2026 guidelines. If you discover a vulnerability:
 
 1. Do **not** open a public issue.
-2. Email `cbuntingde@gmail.com` with a description and reproduction steps.
+2. Open a private [security advisory](https://github.com/cbuntingde/classic-editor/security/advisories/new) via GitHub.
 3. Expect acknowledgment within 72 hours.
 
 ---
