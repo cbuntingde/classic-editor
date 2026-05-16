@@ -1,7 +1,7 @@
 # Classic Editor
 
 ![Plugin Version](https://img.shields.io/badge/Version-1.7.0-blue)
-![WordPress Version](https://img.shields.io/badge/WordPress-6.4-blue)
+![WordPress Version](https://img.shields.io/badge/WordPress-6.9.4-blue)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)
 ![License](https://img.shields.io/badge/License-GPL--2.0-green)
 ![PHPStan Level](https://img.shields.io/badge/PHPStan-Level%208-brightgreen)
@@ -21,7 +21,7 @@ Enables the WordPress classic editor and the old-style Edit Post screen with Tin
 | Requirement       | Minimum         | Recommended     |
 |-------------------|-----------------|-----------------|
 | PHP               | 8.2             | 8.2+            |
-| WordPress Core    | 6.4             | Latest stable   |
+| WordPress Core    | 6.4             | 6.9.4          |
 | PHPStan           | Level 8         | Level 9+        |
 
 ---
