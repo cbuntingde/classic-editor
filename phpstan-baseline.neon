@@ -425,15 +425,3 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: classic-editor.php
-
-		-
-			message: '#^Parameter \#2 \$offset of function array_splice expects int, int\<0, max\>\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: classic-editor.php
-
-		-
-			message: '#^Static property Classic_Editor\:\:\$user_last_editor is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: classic-editor.php
