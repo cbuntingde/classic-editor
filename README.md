@@ -55,9 +55,9 @@ wp plugin activate classic-editor
 ### Code Quality
 
 - PHP 8.2 strict types throughout — no exceptions.
-- WordPress Coding Standards / PSR-12 / PER coding style enforced.
+- WordPress Coding Standards enforced.
 - PHPStan level 8+ static analysis with zero errors.
-- PHPCS with only 2 acceptable warnings (WP REST API signature, read-only filter).
+- Zero PHPCS errors (WordPress standards).
 - composer.lock committed for reproducible builds.
 
 ---
@@ -204,11 +204,9 @@ This project follows OWASP guidelines. If you discover a vulnerability:
 ## Standards & References
 
 - [PHP 8.3 Documentation](https://www.php.net/releases/8.3/)
-- [PSR-12 Coding Standard](https://www.php-fig.org/psr/psr-12/)
-- [PER Coding Style](https://www.php-fig.org/per/coding-style/)
+- [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/)
 - [OWASP Top Ten](https://owasp.org/www-project-top-ten/)
 - [PHPStan Documentation](https://phpstan.org/user-guide/getting-started)
-- [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/)
 
 ---
 
