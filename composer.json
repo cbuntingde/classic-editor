@@ -17,7 +17,7 @@
 		}
 	},
 	"scripts": {
-		"phpcs": "phpcs --standard=WordPress --exclude=WordPress.Files.FileName classic-editor.php",
+		"phpcs": "phpcs --standard=WordPress classic-editor.php",
 		"phpcbf": "phpcbf --standard=WordPress classic-editor.php",
 		"phpstan": "phpstan analyse --configuration=phpstan.neon"
 	}

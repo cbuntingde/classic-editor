@@ -27,7 +27,7 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * phpcs:disable WordPress.Files.FileName.ClassNameNotMatchesFileName,WordPress.Files.FileName.NotFoundConstant
+ * phpcs:disable WordPress.Files.FileName
  */
 
 declare(strict_types=1);
