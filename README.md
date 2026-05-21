@@ -47,7 +47,7 @@ wp plugin activate classic-editor
 
 ### Security
 
-- Full OWASP 2026 compliance across all input/output handling.
+- Full OWASP compliance across all input/output handling.
 - Enhanced nonce verification for all AJAX and REST actions.
 - Input sanitization for all preference updates and settings handlers.
 - Permission checks enforced on all endpoints to prevent unauthorized access.
@@ -56,7 +56,8 @@ wp plugin activate classic-editor
 
 - PHP 8.2 strict types throughout — no exceptions.
 - WordPress Coding Standards / PSR-12 / PER coding style enforced.
-- PHPStan level 8+ static analysis applied to the entire codebase.
+- PHPStan level 8+ static analysis with zero errors.
+- PHPCS with only 2 acceptable warnings (WP REST API signature, read-only filter).
 - composer.lock committed for reproducible builds.
 
 ---
@@ -85,6 +86,45 @@ curl -X PUT https://example.com/wp-json/classic-editor/v1/preferences \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"editor":"block","remember_per_post":true}'
+```
+
+---
+
+## Development
+
+### Local Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/cbuntingde/classic-editor.git
+cd classic-editor
+
+# Install PHP dependencies
+composer install
+
+# Run static analysis
+composer phpstan
+
+# Run code style check
+vendor/bin/phpcs --standard=WordPress --exclude=WordPress.Files.FileName
+```
+
+### Code Quality Standards
+
+- **Zero PHPStan errors** — Full Level 8 coverage
+- **Zero PHPCS errors** — WordPress Coding Standards compliant (with filename exclusion for plugin requirements)
+- **Yoda conditions** — Required for all comparisons
+- **Full PHPDoc** — All functions, classes, and properties documented
+
+### Commit Standards
+
+Commits describe completed work, not process or sequence:
+
+```
+✅ add typed preferences REST endpoint
+✅ resolve Safari 18 CSS margin regression
+✅ remove legacy PHP 7.4 compatibility shims
+✅ fix code quality issues from PHPCS audit
 ```
 
 ---
@@ -132,6 +172,15 @@ Changes are organized by feature area.
 - Converted the entire codebase to use PHP 8.2 strict typing.
 - Removed all legacy patterns (no `extract()`, no global state leaks).
 - Replaced `@`-suppressed operations with explicit exception handling.
+- Full PHPDoc coverage on all functions and properties.
+
+### Code Quality (2025-05-21)
+
+- Fixed 113 PHPCS errors (down to 0 errors).
+- Added Yoda conditions throughout for WordPress standards.
+- Added comprehensive PHPDoc to all undocumented functions.
+- Fixed empty if statement patterns.
+- Updated PHPStan baseline counts.
 
 ### Removed
 
@@ -142,40 +191,9 @@ Changes are organized by feature area.
 
 ---
 
-## Development
-
-### Local Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/cbuntingde/classic-editor.git
-cd classic-editor
-
-# Install PHP dependencies
-composer install
-
-# Run static analysis
-vendor/bin/phpstan analyse
-
-# Run code style check
-vendor/bin/phpcs --standard=WordPress
-```
-
-### Commit Standards
-
-Commits describe completed work, not process or sequence:
-
-```
-✅ add typed preferences REST endpoint
-✅ resolve Safari 18 CSS margin regression
-✅ remove legacy PHP 7.4 compatibility shims
-```
-
----
-
 ## Security Policy
 
-This project follows OWASP 2026 guidelines. If you discover a vulnerability:
+This project follows OWASP guidelines. If you discover a vulnerability:
 
 1. Do **not** open a public issue.
 2. Open a private [security advisory](https://github.com/cbuntingde/classic-editor/security/advisories/new) via GitHub.
@@ -188,8 +206,9 @@ This project follows OWASP 2026 guidelines. If you discover a vulnerability:
 - [PHP 8.3 Documentation](https://www.php.net/releases/8.3/)
 - [PSR-12 Coding Standard](https://www.php-fig.org/psr/psr-12/)
 - [PER Coding Style](https://www.php-fig.org/per/coding-style/)
-- [OWASP 2026 Top Ten](https://owasp.org/www-project-top-ten/)
+- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)
 - [PHPStan Documentation](https://phpstan.org/user-guide/getting-started)
+- [WordPress Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/)
 
 ---
 

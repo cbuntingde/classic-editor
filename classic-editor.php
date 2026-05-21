@@ -26,6 +26,8 @@
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * phpcs:disable WordPress.Files.FileName.ClassNameNotMatchesFileName,WordPress.Files.FileName.NotFoundConstant
  */
 
 declare(strict_types=1);
@@ -45,9 +47,17 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 	 */
 	final class Classic_Editor {
 
-		/** @var array<string, mixed> */
+		/**
+		 * Plugin settings.
+		 *
+		 * @var array<string, mixed>
+		 */
 		private static $settings = array();
-		/** @var array<string, array{classic_editor: bool, block_editor: bool}> */
+		/**
+		 * Supported post types cache.
+		 *
+		 * @var array<string, array{classic_editor: bool, block_editor: bool}>
+		 */
 		private static $supported_post_types = array();
 
 		/**
@@ -129,7 +139,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				add_action( 'rest_api_init', array( self::class, 'register_rest_api' ) );
 				add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_frontend_scripts' ) );
 				add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_admin_scripts' ) );
-			} elseif ( self::$settings['editor'] === 'classic' ) {
+			} elseif ( 'classic' === self::$settings['editor'] ) {
 					add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
 				if ( $is_gutenberg ) {
 						add_filter( 'gutenberg_can_edit_post_type', '__return_false', 100 );
@@ -150,6 +160,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			}
 		}
 
+		/**
+		 * Register REST API routes for preferences.
+		 *
+		 * @return void
+		 */
 		public static function register_rest_api(): void {
 			register_rest_route(
 				'classic-editor/v1',
@@ -182,6 +197,16 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			);
 		}
 
+		/**
+		 * Get user preferences via REST API.
+		 *
+		 * @param WP_REST_Request $request The REST request object (unused, required by WP API).
+		 * @return WP_REST_Response The preferences response.
+		 *
+		 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+		 *
+		 * @phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
+		 */
 		public static function rest_get_preferences( WP_REST_Request $request ): WP_REST_Response {
 			$user_id     = get_current_user_id();
 			$preferences = get_user_meta( $user_id, 'classic-editor-preferences', true );
@@ -195,6 +220,12 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			return new WP_REST_Response( $preferences, 200 );
 		}
 
+		/**
+		 * Update user preferences via REST API.
+		 *
+		 * @param WP_REST_Request $request The REST request object.
+		 * @return WP_REST_Response|WP_Error The updated preferences or error.
+		 */
 		public static function rest_update_preferences( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 			$user_id     = get_current_user_id();
 			$params      = $request->get_json_params() ?? array();
@@ -207,15 +238,18 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			return new WP_REST_Response( $preferences, 200 );
 		}
 
+		/**
+		 * Enqueue frontend scripts for the classic editor switcher.
+		 *
+		 * @return void
+		 */
 		public static function enqueue_frontend_scripts(): void {
 			if ( ! is_singular() ) {
 				return;
 			}
 
 			$settings = self::get_settings();
-			if ( 'block' === $settings['editor'] && self::is_classic( (int) get_queried_object_id() ) ) {
-				// Continue only if editor is 'block' AND post uses classic editor.
-			} else {
+			if ( 'block' !== $settings['editor'] || ! self::is_classic( (int) get_queried_object_id() ) ) {
 				return;
 			}
 
@@ -236,6 +270,12 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			wp_enqueue_script( 'classic-editor-switcher' );
 		}
 
+		/**
+		 * Enqueue admin scripts and styles.
+		 *
+		 * @param string $hook The current admin page hook.
+		 * @return void
+		 */
 		public static function enqueue_admin_scripts( string $hook ): void {
 			if ( ! in_array( $hook, array( 'post.php', 'post-new.php', 'edit.php', 'options-writing.php', 'profile.php', 'user-edit.php' ), true ) ) {
 				return;
@@ -279,11 +319,17 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			wp_enqueue_script( 'classic-editor-admin' );
 		}
 
+		/**
+		 * Remove Gutenberg hooks.
+		 *
+		 * @param string $remove Which hooks to remove ('all' or 'some').
+		 * @return void
+		 */
 		public static function remove_gutenberg_hooks( string $remove = 'all' ): void {
 			remove_action( 'admin_menu', 'gutenberg_menu' );
 			remove_action( 'admin_init', 'gutenberg_redirect_demo' );
 
-			if ( $remove !== 'all' ) {
+			if ( 'all' !== $remove ) {
 				return;
 			}
 
@@ -313,35 +359,37 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param string $refresh
-		 * @param int    $user_id
-		 * @return array<string, mixed>
-		 * @throws RuntimeException
+		 * Get plugin settings.
+		 *
+		 * @param string $refresh Whether to refresh settings ('yes' or 'no').
+		 * @param int    $user_id The user ID for user-specific settings.
+		 * @return array<string, mixed> The settings array.
+		 * @throws RuntimeException If settings cannot be retrieved.
 		 */
 		private static function get_settings( string $refresh = 'no', int $user_id = 0 ): array {
 			$settings = apply_filters( 'classic_editor_plugin_settings', false );
 
 			if ( is_array( $settings ) ) {
 				return array(
-					'editor'           => isset( $settings['editor'] ) && $settings['editor'] === 'block' ? 'block' : 'classic',
+					'editor'           => isset( $settings['editor'] ) && 'block' === $settings['editor'] ? 'block' : 'classic',
 					'allow-users'      => ! empty( $settings['allow-users'] ),
 					'hide-settings-ui' => true,
 				);
 			}
 
-			if ( ! empty( self::$settings ) && $refresh === 'no' ) {
+			if ( ! empty( self::$settings ) && 'no' === $refresh ) {
 				return self::$settings;
 			}
 
 			if ( is_multisite() ) {
 				$defaults = array(
-					'editor'      => get_network_option( null, 'classic-editor-replace' ) === 'block' ? 'block' : 'classic',
+					'editor'      => 'block' === get_network_option( null, 'classic-editor-replace' ) ? 'block' : 'classic',
 					'allow-users' => false,
 				);
 
 				$defaults = apply_filters( 'classic_editor_network_default_settings', $defaults );
 
-				if ( get_network_option( null, 'classic-editor-allow-sites' ) !== 'allow' ) {
+				if ( 'allow' !== get_network_option( null, 'classic-editor-allow-sites' ) ) {
 					$defaults['hide-settings-ui'] = true;
 					return $defaults;
 				}
@@ -353,23 +401,23 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 					$defaults['editor'] = $editor_option;
 				}
 				if ( $allow_users_option ) {
-					$defaults['allow-users'] = $allow_users_option === 'allow';
+					$defaults['allow-users'] = 'allow' === $allow_users_option;
 				}
 
-				$editor      = $defaults['editor'] === 'block' ? 'block' : 'classic';
+				$editor      = 'block' === $defaults['editor'] ? 'block' : 'classic';
 				$allow_users = ! empty( $defaults['allow-users'] );
 			} else {
-				$allow_users = get_option( 'classic-editor-allow-users' ) === 'allow';
+				$allow_users = 'allow' === get_option( 'classic-editor-allow-users' );
 				$option      = get_option( 'classic-editor-replace' );
 
-				if ( $option === 'block' || $option === 'no-replace' ) {
+				if ( 'block' === $option || 'no-replace' === $option ) {
 					$editor = 'block';
 				} else {
 					$editor = 'classic';
 				}
 			}
 
-			if ( ( ! isset( $GLOBALS['pagenow'] ) || $GLOBALS['pagenow'] !== 'options-writing.php' ) && $allow_users ) {
+			if ( ( ! isset( $GLOBALS['pagenow'] ) || 'options-writing.php' !== $GLOBALS['pagenow'] ) && $allow_users ) {
 				$user_options = get_user_option( 'classic-editor-settings', $user_id );
 
 				if ( in_array( $user_options, array( 'block', 'classic' ), true ) ) {
@@ -387,9 +435,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param int $post_id
-		 * @return bool
-		 * @throws InvalidArgumentException
+		 * Check if a post uses the classic editor.
+		 *
+		 * @param int $post_id The post ID to check.
+		 * @return bool True if the post uses the classic editor.
+		 * @throws InvalidArgumentException If the post ID is invalid.
 		 */
 		private static function is_classic( int $post_id = 0 ): bool {
 			if ( ! $post_id ) {
@@ -406,7 +456,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 						$which = get_post_meta( $post_id, 'classic-editor-remember', true );
 
 						if ( $which ) {
-							return $which === 'classic-editor';
+							return 'classic-editor' === $which;
 						}
 					}
 
@@ -422,15 +472,17 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @return int
+		 * Get the ID of the post being edited.
+		 *
+		 * @return int The post ID.
 		 */
 		private static function get_edited_post_id(): int {
 			if (
 				! empty( $_GET['post'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				! empty( $_GET['action'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$_GET['action'] === 'edit' && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				'edit' === $_GET['action'] && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				! empty( $GLOBALS['pagenow'] ) &&
-				$GLOBALS['pagenow'] === 'post.php'
+				'post.php' === $GLOBALS['pagenow']
 			) {
 				return absint( $_GET['post'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
@@ -438,6 +490,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			return 0;
 		}
 
+		/**
+		 * Register plugin settings.
+		 *
+		 * @return void
+		 */
 		public static function register_settings(): void {
 			register_setting(
 				'writing',
@@ -478,7 +535,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param int $user_id
+		 * Save user settings.
+		 *
+		 * @param int $user_id The user ID to save settings for.
+		 * @return void
 		 */
 		public static function save_user_settings( int $user_id ): void {
 			if (
@@ -488,7 +548,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			) {
 				$user_id = (int) $user_id;
 
-				if ( $user_id !== get_current_user_id() && ! current_user_can( 'edit_user', $user_id ) ) {
+				if ( get_current_user_id() !== $user_id && ! current_user_can( 'edit_user', $user_id ) ) {
 					return;
 				}
 
@@ -498,11 +558,13 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param mixed $value
-		 * @return string
+		 * Validate the editor option value.
+		 *
+		 * @param mixed $value The option value to validate.
+		 * @return string The validated editor value.
 		 */
 		public static function validate_option_editor( mixed $value ): string {
-			if ( $value === 'block' ) {
+			if ( 'block' === $value ) {
 				return 'block';
 			}
 
@@ -510,11 +572,13 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param mixed $value
-		 * @return string
+		 * Validate the allow-users option value.
+		 *
+		 * @param mixed $value The option value to validate.
+		 * @return string The validated allow-users value.
 		 */
 		public static function validate_option_allow_users( mixed $value ): string {
-			if ( $value === 'allow' ) {
+			if ( 'allow' === $value ) {
 				return 'allow';
 			}
 
@@ -522,55 +586,69 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * Settings field callback for default editor. Handles both WordPress settings API calls
-		 * (which pass the option value as first arg) and direct calls with a user_id.
+		 * Settings field callback for default editor.
 		 *
-		 * @param mixed $value Option value (from WP settings API) or user ID (when called directly)
+		 * Handles both WordPress settings API calls (which pass the option value as first arg)
+		 * and direct calls with a user_id.
+		 *
+		 * @param mixed $value Option value (from WP settings API) or user ID (when called directly).
+		 * @return void
 		 */
 		public static function settings_1( mixed $value = 0 ): void {
-			// If value is an array, WordPress is calling this as a settings field callback
-			// In that case, use 0 for global settings (no user-specific)
+			// If value is an array, WordPress is calling this as a settings field callback.
+			// In that case, use 0 for global settings (no user-specific).
 			$user_id  = is_array( $value ) ? 0 : (int) $value;
 			$settings = self::get_settings( 'refresh', $user_id );
 
 			?>
-		<div class="classic-editor-options">
-			<p>
-				<input type="radio" name="classic-editor-replace" id="classic-editor-classic" value="classic" <?php checked( $settings['editor'], 'classic' ); ?> />
-				<label for="classic-editor-classic"><?php echo esc_html_x( 'Classic editor', 'Editor Name', 'classic-editor' ); ?></label>
-			</p>
-			<p>
-				<input type="radio" name="classic-editor-replace" id="classic-editor-block" value="block" <?php checked( $settings['editor'], 'block' ); ?> />
-				<label for="classic-editor-block"><?php echo esc_html_x( 'Block editor', 'Editor Name', 'classic-editor' ); ?></label>
-			</p>
-		</div>
-	<script>
-		jQuery( 'document' ).ready( function( $ ) {
-			if ( window.location.hash === '#classic-editor-options' ) {
-				$( '.classic-editor-options' ).closest( 'td' ).addClass( 'highlight' );
-			}
-		} );
-		</script>
+			<div class="classic-editor-options">
+				<p>
+					<input type="radio" name="classic-editor-replace" id="classic-editor-classic" value="classic" <?php checked( $settings['editor'], 'classic' ); ?> />
+					<label for="classic-editor-classic"><?php echo esc_html_x( 'Classic editor', 'Editor Name', 'classic-editor' ); ?></label>
+				</p>
+				<p>
+					<input type="radio" name="classic-editor-replace" id="classic-editor-block" value="block" <?php checked( $settings['editor'], 'block' ); ?> />
+					<label for="classic-editor-block"><?php echo esc_html_x( 'Block editor', 'Editor Name', 'classic-editor' ); ?></label>
+				</p>
+			</div>
+		<script>
+			jQuery( 'document' ).ready( function( $ ) {
+				if ( window.location.hash === '#classic-editor-options' ) {
+					$( '.classic-editor-options' ).closest( 'td' ).addClass( 'highlight' );
+				}
+			} );
+			</script>
 			<?php
 		}
 
+		/**
+		 * Settings field callback for allowing users to switch editors.
+		 *
+		 * @return void
+		 */
 		public static function settings_2(): void {
 			$settings = self::get_settings( 'refresh' );
 
 			?>
-		<div class="classic-editor-options">
-			<p>
-				<input type="radio" name="classic-editor-allow-users" id="classic-editor-allow" value="allow" <?php checked( $settings['allow-users'], true ); ?> />
-				<label for="classic-editor-allow"><?php esc_html_e( 'Yes', 'classic-editor' ); ?></label>
-		</p>
-			<p>
-				<input type="radio" name="classic-editor-allow-users" id="classic-editor-disallow" value="disallow" <?php checked( $settings['allow-users'], false ); ?> />
-				<label for="classic-editor-disallow"><?php esc_html_e( 'No', 'classic-editor' ); ?></label>
-			</p>
-		</div>
+			<div class="classic-editor-options">
+				<p>
+					<input type="radio" name="classic-editor-allow-users" id="classic-editor-allow" value="allow" <?php checked( $settings['allow-users'], true ); ?> />
+					<label for="classic-editor-allow"><?php esc_html_e( 'Yes', 'classic-editor' ); ?></label>
+				</p>
+				<p>
+					<input type="radio" name="classic-editor-allow-users" id="classic-editor-disallow" value="disallow" <?php checked( $settings['allow-users'], false ); ?> />
+					<label for="classic-editor-disallow"><?php esc_html_e( 'No', 'classic-editor' ); ?></label>
+				</p>
+			</div>
 			<?php
 		}
 
+		/**
+		 * Render user settings on the profile page.
+		 *
+		 * @param WP_User|null $user The user object.
+		 * @return void
+		 */
 		public static function user_settings( WP_User|null $user = null ): void {
 			$settings = self::get_settings( 'update' );
 
@@ -581,7 +659,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			$user_id = $user instanceof WP_User ? (int) $user->ID : 0;
 
 			?>
-		<table class="form-table">
+			<table class="form-table">
 		<tr class="classic-editor-user-options">
 				<th scope="row"><?php esc_html_e( 'Default Editor', 'classic-editor' ); ?></th>
 			<td>
@@ -594,14 +672,19 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			<?php
 		}
 
+		/**
+		 * Render network settings on the Network Admin settings page.
+		 *
+		 * @return void
+		 */
 		public static function network_settings(): void {
 			$editor     = get_network_option( null, 'classic-editor-replace' );
-			$is_checked = get_network_option( null, 'classic-editor-allow-sites' ) === 'allow';
+			$is_checked = 'allow' === get_network_option( null, 'classic-editor-allow-sites' );
 
 			?>
-		<h2 id="classic-editor-options"><?php esc_html_e( 'Editor Settings', 'classic-editor' ); ?></h2>
-		<table class="form-table">
-			<?php wp_nonce_field( 'allow-site-admin-settings', 'classic-editor-network-settings' ); ?>
+			<h2 id="classic-editor-options"><?php esc_html_e( 'Editor Settings', 'classic-editor' ); ?></h2>
+			<table class="form-table">
+				<?php wp_nonce_field( 'allow-site-admin-settings', 'classic-editor-network-settings' ); ?>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Default editor for all sites', 'classic-editor' ); ?></th>
 				<td>
@@ -627,33 +710,46 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			<?php
 		}
 
+		/**
+		 * Save network settings.
+		 *
+		 * @return void
+		 */
 		public static function save_network_settings(): void {
 			if (
 				isset( $_POST['classic-editor-network-settings'] )
 				&& current_user_can( 'manage_network_options' )
 				&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['classic-editor-network-settings'] ) ), 'allow-site-admin-settings' )
 			) {
-				if ( isset( $_POST['classic-editor-replace'] ) && $_POST['classic-editor-replace'] === 'block' ) {
+				if ( isset( $_POST['classic-editor-replace'] ) && 'block' === $_POST['classic-editor-replace'] ) {
 					update_network_option( null, 'classic-editor-replace', 'block' );
 				} else {
 					update_network_option( null, 'classic-editor-replace', 'classic' );
 				}
-				if ( isset( $_POST['classic-editor-allow-sites'] ) && $_POST['classic-editor-allow-sites'] === 'allow' ) {
-					update_network_option( null, 'classic-editor-allow-sites', 'allow' );
+				if ( isset( $_POST['classic-editor-allow-sites'] ) && 'allow' === $_POST['classic-editor-allow-sites'] ) {
+					add_network_option( null, 'classic-editor-allow-sites', 'allow' );
 				} else {
 					update_network_option( null, 'classic-editor-allow-sites', 'disallow' );
 				}
 			}
 		}
 
+		/**
+		 * Add hidden field for redirect helper.
+		 *
+		 * @return void
+		 */
 		public static function add_redirect_helper(): void {
 			?>
-		<input type="hidden" name="classic-editor" value="" />
+			<input type="hidden" name="classic-editor" value="" />
 			<?php
 		}
 
 		/**
-		 * @param WP_Post $post
+		 * Remember classic editor selection when viewing post.
+		 *
+		 * @param WP_Post $post The post being edited.
+		 * @return void
 		 */
 		public static function remember_classic_editor( WP_Post $post ): void {
 			$post_type = get_post_type( $post );
@@ -664,9 +760,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param array<string, mixed> $editor_settings
-		 * @param mixed                $context
-		 * @return array<string, mixed>
+		 * Remember block editor selection.
+		 *
+		 * @param array<string, mixed> $editor_settings The editor settings.
+		 * @param mixed                $context          The post context.
+		 * @return array<string, mixed> The modified settings.
 		 */
 		public static function remember_block_editor( array $editor_settings, mixed $context ): array {
 			$post = null;
@@ -689,10 +787,12 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param int    $post_id
-		 * @param string $editor
+		 * Store the editor preference for a post.
+		 *
+		 * @param int    $post_id The post ID.
+		 * @param string $editor  The editor identifier.
 		 * @return void
-		 * @throws RuntimeException
+		 * @throws RuntimeException If the post ID is invalid.
 		 */
 		private static function remember( int $post_id, string $editor ): void {
 			$user_preferences = get_user_meta( get_current_user_id(), 'classic-editor-preferences', true );
@@ -707,10 +807,12 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param bool    $use_block_editor
-		 * @param WP_Post $post
-		 * @return bool
-		 * @throws InvalidArgumentException
+		 * Choose which editor to use for a post.
+		 *
+		 * @param bool    $use_block_editor Whether to use the block editor.
+		 * @param WP_Post $post              The post object.
+		 * @return bool The editor choice.
+		 * @throws InvalidArgumentException If the post is invalid.
 		 */
 		public static function choose_editor( bool $use_block_editor, WP_Post $post ): bool {
 			$settings = self::get_settings();
@@ -720,9 +822,9 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				return $use_block_editor;
 			}
 
-			if ( empty( $post->ID ) || $post->post_status === 'auto-draft' ) {
+			if ( empty( $post->ID ) || 'auto-draft' === $post->post_status ) {
 				if (
-					( $settings['editor'] === 'classic' && ! isset( $_GET['classic-editor__forget'] ) )
+					( 'classic' === $settings['editor'] && ! isset( $_GET['classic-editor__forget'] ) )
 					|| ( isset( $_GET['classic-editor'] ) && isset( $_GET['classic-editor__forget'] ) )
 				) {
 					$use_block_editor = false;
@@ -741,37 +843,51 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param string $location
-		 * @return string
+		 * Filter the redirect location to add classic-editor param.
+		 *
+		 * @param string $location The original redirect location.
+		 * @return string The modified location.
 		 */
 		public static function redirect_location( string $location ): string {
+			// This is a read-only filter that just adds a query arg. No form data processed.
+			// phpcs:disable WordPress.Security.NonceVerification
 			if (
-				isset( $_REQUEST['classic-editor'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				isset( $_REQUEST['classic-editor'] )
 				|| ( isset( $_POST['_wp_http_referer'] ) && str_contains( sanitize_text_field( wp_unslash( $_POST['_wp_http_referer'] ) ), '&classic-editor' ) )
 			) {
 				$location = add_query_arg( 'classic-editor', '', $location );
 			}
+			// phpcs:enable WordPress.Security.NonceVerification
 
 			return $location;
 		}
 
 		/**
-		 * @param string $url
-		 * @return string
+		 * Filter the edit post link to include classic-editor param.
+		 *
+		 * This is a read-only filter that adds ?classic-editor to URLs.
+		 *
+		 * @param string $url The original edit post URL.
+		 * @return string The modified URL.
 		 */
 		public static function get_edit_post_link( string $url ): string {
 			$settings = self::get_settings();
 
-			if ( isset( $_REQUEST['classic-editor'] ) || $settings['editor'] === 'classic' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:disable WordPress.Security.NonceVerification
+			if ( isset( $_REQUEST['classic-editor'] ) || 'classic' === $settings['editor'] ) {
 				$url = add_query_arg( 'classic-editor', '', $url );
 			}
+			// phpcs:enable WordPress.Security.NonceVerification
 
 			return $url;
 		}
 
 		/**
-		 * @param string  $post_type
-		 * @param WP_Post $post
+		 * Add meta box for switching editors.
+		 *
+		 * @param string  $post_type The post type.
+		 * @param WP_Post $post      The post object.
+		 * @return void
 		 */
 		public static function add_meta_box( string $post_type, WP_Post $post ): void {
 			$editors = self::get_enabled_editors_for_post( $post );
@@ -792,7 +908,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param WP_Post $post
+		 * Render the editor switch meta box.
+		 *
+		 * @param WP_Post $post The post object.
+		 * @return void
 		 */
 		public static function do_meta_box( WP_Post $post ): void {
 			$edit_url         = get_edit_post_link( $post->ID, 'raw' );
@@ -811,10 +930,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * Enhanced meta box with both directions.
+		 * Add bidirectional editor switch meta box.
 		 *
-		 * @param string  $post_type
-		 * @param WP_Post $post
+		 * @param string  $post_type The post type.
+		 * @param WP_Post $post      The post object.
+		 * @return void
 		 */
 		public static function add_meta_box_bidirectional( string $post_type, WP_Post $post ): void {
 			$editors = self::get_enabled_editors_for_post( $post );
@@ -835,7 +955,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param WP_Post $post
+		 * Render the bidirectional editor switch meta box.
+		 *
+		 * @param WP_Post $post The post object.
+		 * @return void
 		 */
 		public static function do_meta_box_bidirectional( WP_Post $post ): void {
 			$edit_url   = get_edit_post_link( $post->ID, 'raw' );
@@ -859,7 +982,9 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * Add AJAX handler for inline editor switching.
+		 * Handle AJAX request to switch editors.
+		 *
+		 * @return void
 		 */
 		public static function ajax_switch_editor(): void {
 			check_ajax_referer( 'classic-editor-switch', 'nonce' );
@@ -887,7 +1012,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			wp_send_json_success(
 				array(
 					'message' => sprintf(
-								/* translators: %s: editor name */
+						/* translators: %s: editor name */
 						__( 'Editor preference saved: %s', 'classic-editor' ),
 						'classic' === $editor ? __( 'Classic Editor', 'classic-editor' ) : __( 'Block Editor', 'classic-editor' )
 					),
@@ -895,6 +1020,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			);
 		}
 
+		/**
+		 * Enqueue scripts for the block editor.
+		 *
+		 * @return void
+		 */
 		public static function enqueue_block_editor_scripts(): void {
 			if ( empty( $GLOBALS['post'] ) ) {
 				return;
@@ -922,14 +1052,16 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param array<int|string, string> $links
-		 * @param string                    $file
-		 * @return array<int|string, string>
+		 * Add settings link to plugin action links.
+		 *
+		 * @param array<int|string, string> $links The plugin action links.
+		 * @param string                    $file  The plugin file.
+		 * @return array<int|string, string> The modified links.
 		 */
 		public static function add_settings_link( array $links, string $file ): array {
 			$settings = self::get_settings();
 
-			if ( $file === 'classic-editor/classic-editor.php' && ! $settings['hide-settings-ui'] && current_user_can( 'manage_options' ) ) {
+			if ( 'classic-editor/classic-editor.php' === $file && ! $settings['hide-settings-ui'] && current_user_can( 'manage_options' ) ) {
 				if ( current_filter() === 'plugin_action_links' ) {
 					$url = admin_url( 'options-writing.php#classic-editor-options' );
 				} else {
@@ -947,8 +1079,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param string $post_type
-		 * @return bool
+		 * Check if a post type supports the block editor.
+		 *
+		 * @param string $post_type The post type to check.
+		 * @return bool True if the post type can use the block editor.
 		 */
 		private static function can_edit_post_type( string $post_type ): bool {
 			if ( function_exists( 'gutenberg_can_edit_post_type' ) ) {
@@ -963,8 +1097,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param string $post_type
-		 * @return array{classic_editor: bool, block_editor: bool}
+		 * Get enabled editors for a post type.
+		 *
+		 * @param string $post_type The post type to check.
+		 * @return array{classic_editor: bool, block_editor: bool} The enabled editors.
 		 */
 		private static function get_enabled_editors_for_post_type( string $post_type ): array {
 			if ( isset( self::$supported_post_types[ $post_type ] ) ) {
@@ -986,8 +1122,10 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param WP_Post|int $post
-		 * @return array{classic_editor: bool, block_editor: bool}
+		 * Get enabled editors for a post.
+		 *
+		 * @param WP_Post|int $post The post object or ID.
+		 * @return array{classic_editor: bool, block_editor: bool} The enabled editors.
 		 */
 		private static function get_enabled_editors_for_post( $post ): array {
 			$post      = get_post( $post );
@@ -1006,9 +1144,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param array<int|string, mixed> $actions
-		 * @param WP_Post                  $post
-		 * @return array<int|string, mixed>
+		 * Add edit links to post row actions.
+		 *
+		 * @param array<int|string, mixed> $actions The row actions.
+		 * @param WP_Post                  $post    The post object.
+		 * @return array<int|string, mixed> The modified actions.
 		 */
 		public static function add_edit_links( array $actions, WP_Post $post ): array {
 			if ( array_key_exists( 'classic', $actions ) ) {
@@ -1052,7 +1192,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			);
 
 			$edit_offset = array_search( 'edit', array_keys( $actions ), true );
-			if ( $edit_offset !== false ) {
+			if ( false !== $edit_offset ) {
 				array_splice( $actions, $edit_offset, 1, $edit_actions );
 			}
 
@@ -1060,12 +1200,14 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param array<int|string, string> $post_states
-		 * @param WP_Post                   $post
-		 * @return array<int|string, string>
+		 * Add post state for the editor in the posts list.
+		 *
+		 * @param array<int|string, string> $post_states The post states.
+		 * @param WP_Post                   $post        The post object.
+		 * @return array<int|string, string> The modified post states.
 		 */
 		public static function add_post_state( array $post_states, WP_Post $post ): array {
-			if ( get_post_status( $post ) === 'trash' ) {
+			if ( 'trash' === get_post_status( $post ) ) {
 				return $post_states;
 			}
 
@@ -1081,12 +1223,12 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				$last_editor = get_post_meta( $post->ID, 'classic-editor-remember', true );
 
 				if ( $last_editor ) {
-					$is_classic = $last_editor === 'classic-editor';
+					$is_classic = 'classic-editor' === $last_editor;
 				} elseif ( ! empty( $post->post_content ) ) {
 					$is_classic = ! self::has_blocks( (int) $post->ID );
 				} else {
 					$settings   = self::get_settings();
-					$is_classic = $settings['editor'] === 'classic';
+					$is_classic = 'classic' === $settings['editor'];
 				}
 
 				$state = $is_classic ? esc_html_x( 'Classic editor', 'Editor Name', 'classic-editor' ) : esc_html_x( 'Block editor', 'Editor Name', 'classic-editor' );
@@ -1098,38 +1240,50 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			return $post_states;
 		}
 
+		/**
+		 * Add inline styles for edit.php page.
+		 *
+		 * @return void
+		 */
 		public static function add_edit_php_inline_style(): void {
 			?>
-		<style>
-		.classic-editor-forced-state {
-		font-style: italic;
-			font-weight: 400;
-			color: #72777c;
-			font-size: small;
-		}
-		</style>
+			<style>
+			.classic-editor-forced-state {
+			font-style: italic;
+				font-weight: 400;
+				color: #72777c;
+				font-size: small;
+			}
+			</style>
 			<?php
 		}
 
+		/**
+		 * Handle admin initialization.
+		 *
+		 * @return void
+		 */
 		public static function on_admin_init(): void {
 			global $pagenow;
 
-			if ( $pagenow !== 'post.php' ) {
+			if ( 'post.php' !== $pagenow ) {
 				return;
 			}
 
 			$settings = self::get_settings();
 			$post_id  = self::get_edited_post_id();
 
-			if ( $post_id && ( $settings['editor'] === 'classic' || self::is_classic( $post_id ) ) ) {
+			if ( $post_id && ( 'classic' === $settings['editor'] || self::is_classic( $post_id ) ) ) {
 				remove_action( 'admin_notices', array( 'WP_Privacy_Policy_Content', 'notice' ) );
 				add_action( 'edit_form_after_title', array( 'WP_Privacy_Policy_Content', 'notice' ) );
 			}
 		}
 
 		/**
-		 * @param int|WP_Post|null $post
-		 * @return bool
+		 * Check if a post has block content.
+		 *
+		 * @param int|WP_Post|null $post The post object or ID.
+		 * @return bool True if the post has blocks.
 		 */
 		private static function has_blocks( $post = null ): bool {
 			if ( $post instanceof WP_Post ) {
@@ -1144,6 +1298,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			return str_contains( $post, '<!-- wp:' );
 		}
 
+		/**
+		 * Activate the plugin.
+		 *
+		 * @return void
+		 */
 		public static function activate(): void {
 			register_uninstall_hook( __FILE__, array( self::class, 'uninstall' ) );
 
@@ -1160,6 +1319,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			}
 		}
 
+		/**
+		 * Uninstall the plugin.
+		 *
+		 * @return void
+		 */
 		public static function uninstall(): void {
 			if ( is_multisite() ) {
 				delete_network_option( null, 'classic-editor-replace' );
@@ -1172,6 +1336,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			delete_metadata( 'post', 0, 'classic-editor-remember', '', true );
 		}
 
+		/**
+		 * Fix Safari rendering issue.
+		 *
+		 * @return void
+		 */
 		public static function safari_fix(): void {
 			global $current_screen;
 
@@ -1189,12 +1358,14 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		}
 
 		/**
-		 * @param string $src
-		 * @param string $handle
-		 * @return string
+		 * Fix post.js script loading for WordPress 6.7.1.
+		 *
+		 * @param string $src   The script source URL.
+		 * @param string $handle The script handle.
+		 * @return string The modified source.
 		 */
 		public static function fix_post_js( string $src, string $handle ): string {
-			if ( $handle === 'post' && is_string( $src ) && ! str_contains( $src, 'ver=62504-20241121' ) ) {
+			if ( 'post' === $handle && is_string( $src ) && ! str_contains( $src, 'ver=62504-20241121' ) ) {
 				$suffix = wp_scripts_get_suffix();
 				$src    = plugins_url( 'scripts/', __FILE__ ) . "post{$suffix}.js";
 				$src    = add_query_arg( 'ver', '62504-20241121', $src );

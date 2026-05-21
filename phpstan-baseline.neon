@@ -27,7 +27,7 @@ parameters:
 
 		-
 			message: "#^Function add_network_option not found\\.$#"
-			count: 2
+			count: 3
 			path: classic-editor.php
 
 		-
@@ -227,7 +227,7 @@ parameters:
 
 		-
 			message: "#^Function update_network_option not found\\.$#"
-			count: 4
+			count: 3
 			path: classic-editor.php
 
 		-
