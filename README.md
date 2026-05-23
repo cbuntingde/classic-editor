@@ -21,7 +21,7 @@ Enables the WordPress classic editor and the old-style Edit Post screen with Tin
 | Requirement       | Minimum         | Recommended     |
 |-------------------|-----------------|-----------------|
 | PHP               | 8.2             | 8.2+            |
-| WordPress Core    | 6.4             | 6.9.4          |
+| WordPress Core    | 6.4             | 6.9.4           |
 | PHPStan           | Level 8         | Level 9+        |
 
 ---

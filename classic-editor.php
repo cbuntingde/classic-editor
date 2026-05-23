@@ -78,7 +78,6 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		 */
 		public static function init_actions(): void {
 			$block_editor = has_action( 'enqueue_block_assets' );
-			$is_gutenberg = function_exists( 'gutenberg_register_scripts_and_styles' );
 			register_activation_hook( __FILE__, array( self::class, 'activate' ) );
 			self::$settings = self::get_settings();
 			if ( is_multisite() ) {
@@ -98,25 +97,18 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				}
 			}
 
-			remove_action( 'try_gutenberg_panel', 'wp_try_gutenberg_panel' );
 			add_action( 'admin_print_styles', array( self::class, 'safari_fix' ) );
 			global $wp_version;
 			if ( version_compare( $wp_version, '6.7.1', '>=' ) && version_compare( $wp_version, '6.8', '<' ) && is_admin() ) {
 				add_filter( 'script_loader_src', array( self::class, 'fix_post_js' ), 11, 2 );
 			}
 
-			if ( ! $block_editor && ! $is_gutenberg ) {
+			if ( ! $block_editor ) {
 				return;
 			}
 
 			if ( self::$settings['allow-users'] ) {
 				add_filter( 'use_block_editor_for_post', array( self::class, 'choose_editor' ), 100, 2 );
-				if ( $is_gutenberg ) {
-					add_filter( 'gutenberg_can_edit_post', array( self::class, 'choose_editor' ), 100, 2 );
-					if ( 'classic' === self::$settings['editor'] ) {
-						self::remove_gutenberg_hooks( 'some' );
-					}
-				}
 
 				add_filter( 'get_edit_post_link', array( self::class, 'get_edit_post_link' ) );
 				add_filter( 'redirect_post_location', array( self::class, 'redirect_location' ) );
@@ -140,23 +132,11 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_frontend_scripts' ) );
 				add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_admin_scripts' ) );
 			} elseif ( 'classic' === self::$settings['editor'] ) {
-					add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
-				if ( $is_gutenberg ) {
-						add_filter( 'gutenberg_can_edit_post_type', '__return_false', 100 );
-						self::remove_gutenberg_hooks();
-				}
+				add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
 			}
 
 			if ( $block_editor ) {
 				add_action( 'admin_init', array( self::class, 'on_admin_init' ) );
-			}
-
-			if ( $is_gutenberg ) {
-				remove_action( 'admin_menu', 'gutenberg_menu' );
-				remove_action( 'admin_init', 'gutenberg_redirect_demo' );
-				remove_action( 'wp_enqueue_scripts', 'gutenberg_register_scripts_and_styles' );
-				remove_action( 'admin_enqueue_scripts', 'gutenberg_register_scripts_and_styles' );
-				remove_action( 'admin_notices', 'gutenberg_wordpress_version_notice' );
 			}
 		}
 
@@ -317,45 +297,6 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			);
 
 			wp_enqueue_script( 'classic-editor-admin' );
-		}
-
-		/**
-		 * Remove Gutenberg hooks.
-		 *
-		 * @param string $remove Which hooks to remove ('all' or 'some').
-		 * @return void
-		 */
-		public static function remove_gutenberg_hooks( string $remove = 'all' ): void {
-			remove_action( 'admin_menu', 'gutenberg_menu' );
-			remove_action( 'admin_init', 'gutenberg_redirect_demo' );
-
-			if ( 'all' !== $remove ) {
-				return;
-			}
-
-			remove_action( 'wp_enqueue_scripts', 'gutenberg_register_scripts_and_styles' );
-			remove_action( 'admin_enqueue_scripts', 'gutenberg_register_scripts_and_styles' );
-			remove_action( 'admin_notices', 'gutenberg_wordpress_version_notice' );
-			remove_action( 'rest_api_init', 'gutenberg_register_rest_widget_updater_routes' );
-			remove_action( 'admin_print_styles', 'gutenberg_block_editor_admin_print_styles' );
-			remove_action( 'admin_print_scripts', 'gutenberg_block_editor_admin_print_scripts' );
-			remove_action( 'admin_print_footer_scripts', 'gutenberg_block_editor_admin_print_footer_scripts' );
-			remove_action( 'admin_footer', 'gutenberg_block_editor_admin_footer' );
-			remove_action( 'admin_enqueue_scripts', 'gutenberg_widgets_init' );
-			remove_action( 'admin_notices', 'gutenberg_build_files_notice' );
-
-			remove_filter( 'load_script_translation_file', 'gutenberg_override_translation_file' );
-			remove_filter( 'block_editor_settings', 'gutenberg_extend_block_editor_styles' );
-			remove_filter( 'default_content', 'gutenberg_default_demo_content' );
-			remove_filter( 'default_title', 'gutenberg_default_demo_title' );
-			remove_filter( 'block_editor_settings', 'gutenberg_legacy_widget_settings' );
-			remove_filter( 'rest_request_after_callbacks', 'gutenberg_filter_oembed_result' );
-			remove_filter( 'wp_refresh_nonces', 'gutenberg_add_rest_nonce_to_heartbeat_response_headers' );
-			remove_filter( 'get_edit_post_link', 'gutenberg_revisions_link_to_editor' );
-			remove_filter( 'wp_prepare_revision_for_js', 'gutenberg_revisions_restore' );
-			remove_filter( 'body_class', 'gutenberg_add_responsive_body_class' );
-			remove_filter( 'admin_url', 'gutenberg_modify_add_new_button_url' );
-			remove_filter( 'register_post_type_args', 'gutenberg_filter_post_type_labels' );
 		}
 
 		/**
@@ -553,7 +494,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				}
 
 				$editor = self::validate_option_editor( sanitize_text_field( wp_unslash( $_POST['classic-editor-replace'] ) ) );
-				update_user_option( $user_id, 'classic-editor-settings', $editor );
+				update_user_meta( $user_id, 'classic-editor-settings', $editor );
 			}
 		}
 
@@ -612,7 +553,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 				</p>
 			</div>
 		<script>
-			jQuery( 'document' ).ready( function( $ ) {
+			jQuery( function( $ ) {
 				if ( window.location.hash === '#classic-editor-options' ) {
 					$( '.classic-editor-options' ).closest( 'td' ).addClass( 'highlight' );
 				}
@@ -944,7 +885,7 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 			}
 
 			add_meta_box(
-				'classic-editor-switch-editor',
+				'classic-editor-switch-editor-bidirectional',
 				__( 'Editor', 'classic-editor' ),
 				array( self::class, 'do_meta_box_bidirectional' ),
 				null,
@@ -1085,10 +1026,6 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		 * @return bool True if the post type can use the block editor.
 		 */
 		private static function can_edit_post_type( string $post_type ): bool {
-			if ( function_exists( 'gutenberg_can_edit_post_type' ) ) {
-				return (bool) gutenberg_can_edit_post_type( $post_type );
-			}
-
 			if ( function_exists( 'use_block_editor_for_post_type' ) ) {
 				return (bool) use_block_editor_for_post_type( $post_type );
 			}
@@ -1342,9 +1279,9 @@ if ( ! class_exists( 'Classic_Editor' ) ) :
 		 * @return void
 		 */
 		public static function safari_fix(): void {
-			global $current_screen;
+			$current_screen = get_current_screen();
 
-			if ( isset( $current_screen->base ) && 'post' === $current_screen->base ) {
+			if ( $current_screen && 'post' === $current_screen->base ) {
 				$clear = is_rtl() ? 'right' : 'left';
 
 				?>
